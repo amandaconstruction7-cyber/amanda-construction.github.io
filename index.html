@@ -305,15 +305,48 @@
     transition:.2s;
   }
   .modal-close:hover{background:var(--red);}
-  .modal-gallery{padding:28px 30px 34px;display:grid;grid-template-columns:repeat(2,1fr);gap:16px;}
-  .modal-gallery .g-item{
-    aspect-ratio:4/3;border-radius:6px;overflow:hidden;
+  .modal-gallery{padding:0;position:relative;background:#0c0a09;}
+  .carousel-viewport{
+    position:relative;width:100%;aspect-ratio:4/3;overflow:hidden;
     background:linear-gradient(150deg,var(--navy) 0%,var(--navy-2) 100%);
-    display:flex;flex-direction:column;align-items:center;justify-content:center;color:rgba(255,255,255,.5);
-    font-family:'Barlow Condensed',sans-serif;font-size:13px;text-align:center;padding:10px;
+    touch-action:pan-y;user-select:none;
   }
-  .modal-gallery .g-item .icon{color:rgba(255,255,255,.35);}
-  .modal-gallery img{width:100%;height:100%;object-fit:cover;}
+  .carousel-track{display:flex;height:100%;transition:transform .35s cubic-bezier(.4,0,.2,1);}
+  .carousel-slide{flex:0 0 100%;height:100%;display:flex;align-items:center;justify-content:center;position:relative;}
+  .carousel-slide img{width:100%;height:100%;object-fit:cover;pointer-events:none;}
+  .carousel-slide .g-placeholder{
+    display:flex;flex-direction:column;align-items:center;justify-content:center;gap:8px;
+    color:rgba(255,255,255,.4);font-family:'Barlow Condensed',sans-serif;font-size:14px;text-align:center;padding:20px;
+  }
+  .carousel-slide .g-placeholder .icon{width:32px;height:32px;color:rgba(255,255,255,.3);}
+  .carousel-nav{
+    position:absolute;top:50%;transform:translateY(-50%);z-index:5;
+    width:44px;height:44px;border-radius:50%;background:rgba(20,15,12,.55);
+    border:1px solid rgba(255,255,255,.25);color:var(--white);
+    display:flex;align-items:center;justify-content:center;cursor:pointer;
+    transition:background .2s;backdrop-filter:blur(2px);
+  }
+  .carousel-nav:hover{background:var(--red);}
+  .carousel-nav.prev{left:16px;}
+  .carousel-nav.next{right:16px;}
+  .carousel-nav .icon{width:22px;height:22px;}
+  .carousel-nav.prev .icon{transform:scaleX(-1);}
+  .carousel-counter{
+    position:absolute;bottom:16px;left:50%;transform:translateX(-50%);z-index:5;
+    background:rgba(20,15,12,.6);color:var(--white);font-family:'Barlow Condensed',sans-serif;
+    font-size:13px;letter-spacing:1px;padding:5px 14px;border-radius:20px;border:1px solid rgba(255,255,255,.2);
+  }
+  .carousel-dots{position:absolute;bottom:16px;right:16px;z-index:5;display:flex;gap:6px;}
+  .carousel-dots span{width:7px;height:7px;border-radius:50%;background:rgba(255,255,255,.35);transition:background .2s;}
+  .carousel-dots span.active{background:var(--gold);}
+  .thumb-strip{display:flex;gap:8px;padding:14px 20px;overflow-x:auto;background:var(--cream);}
+  .thumb-strip .thumb{
+    flex:0 0 64px;height:48px;border-radius:4px;overflow:hidden;cursor:pointer;
+    border:2px solid transparent;opacity:.55;transition:.2s;
+    background:linear-gradient(150deg,var(--navy) 0%,var(--navy-2) 100%);
+  }
+  .thumb-strip .thumb.active{opacity:1;border-color:var(--red);}
+  .thumb-strip .thumb img{width:100%;height:100%;object-fit:cover;}
 
   /* ---------- WHATSAPP FLOAT ---------- */
   .wa-float{
@@ -361,7 +394,7 @@
     .services-grid{grid-template-columns:1fr;}
     .portfolio-grid{grid-template-columns:1fr;}
     .about-list{grid-template-columns:1fr;}
-    .modal-gallery{grid-template-columns:1fr;}
+    .carousel-viewport{aspect-ratio:1/1;}
     .field-row{grid-template-columns:1fr;}
     .footer-grid{grid-template-columns:1fr;}
     .hero{padding:70px 0 90px;}
@@ -377,6 +410,7 @@
   <symbol id="i-pin" viewBox="0 0 24 24"><path d="M12 22s7-7.2 7-12a7 7 0 1 0-14 0c0 4.8 7 12 7 12Z"/><circle cx="12" cy="10" r="2.6"/></symbol>
   <symbol id="i-clock" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9.5"/><path d="M12 7v5.3l3.5 2"/></symbol>
   <symbol id="i-arrow-right" viewBox="0 0 24 24"><path d="M4 12h16"/><path d="M13 5l7 7-7 7"/></symbol>
+  <symbol id="i-chevron" viewBox="0 0 24 24"><path d="M9 5l7 7-7 7"/></symbol>
   <symbol id="i-close" viewBox="0 0 24 24"><path d="M5 5l14 14M19 5L5 19"/></symbol>
   <symbol id="i-star" viewBox="0 0 24 24"><path class="icon-fill" d="M12 2.5l2.9 6 6.6.6-5 4.5 1.5 6.5-6-3.5-6 3.5 1.5-6.5-5-4.5 6.6-.6 2.9-6Z"/></symbol>
   <symbol id="i-facebook" viewBox="0 0 24 24"><path class="icon-fill" d="M14.5 8.3h2.3V5.1h-2.3c-2.4 0-4 1.6-4 4v1.7H8.2v3.3h2.3V21h3.3v-6.9h2.4l.4-3.3h-2.8V9.4c0-.7.4-1.1 1.1-1.1Z"/></symbol>
@@ -696,7 +730,15 @@
       </div>
       <button class="modal-close" onclick="closeModal()"><svg class="icon"><use href="#i-close"/></svg></button>
     </div>
-    <div class="modal-gallery" id="modalGallery"></div>
+    <div class="modal-gallery">
+      <div class="carousel-viewport" id="carouselViewport">
+        <div class="carousel-track" id="carouselTrack"></div>
+        <button class="carousel-nav prev" onclick="prevSlide()" aria-label="Previous photo"><svg class="icon"><use href="#i-chevron"/></svg></button>
+        <button class="carousel-nav next" onclick="nextSlide()" aria-label="Next photo"><svg class="icon"><use href="#i-chevron"/></svg></button>
+        <div class="carousel-counter" id="carouselCounter">1 / 4</div>
+      </div>
+      <div class="thumb-strip" id="thumbStrip"></div>
+    </div>
   </div>
 </div>
 
@@ -738,25 +780,68 @@ function renderPortfolioGrid(){
 }
 renderPortfolioGrid();
 
+let currentCat = null;
+let currentIndex = 0;
+
 function openModal(id){
   const cat = portfolioData.find(c => c.id === id);
   if(!cat) return;
+  currentCat = cat;
+  currentIndex = 0;
+
   document.getElementById('modalCat').textContent = 'PORTFOLIO';
   document.getElementById('modalTitle').textContent = cat.title;
 
-  const gallery = document.getElementById('modalGallery');
-  if(cat.images && cat.images.length){
-    gallery.innerHTML = cat.images.map(src => `<div class="g-item"><img src="${src}" alt="${cat.title}"></div>`).join('');
-  } else {
-    // placeholder enquanto não há fotos reais cadastradas
-    gallery.innerHTML = Array.from({length:4}).map((_,i) => `
-      <div class="g-item"><svg class="icon" style="width:26px;height:26px;margin-bottom:8px;"><use href="#${cat.icon}"/></svg>${cat.title} photo ${i+1}<br><small style="opacity:.6">(add real photo)</small></div>
-    `).join('');
+  const slideCount = (cat.images && cat.images.length) ? cat.images.length : 4;
+  const track = document.getElementById('carouselTrack');
+  const thumbs = document.getElementById('thumbStrip');
+
+  let slidesHtml = '';
+  let thumbsHtml = '';
+  for(let i = 0; i < slideCount; i++){
+    if(cat.images && cat.images.length){
+      slidesHtml += `<div class="carousel-slide"><img src="${cat.images[i]}" alt="${cat.title} ${i+1}"></div>`;
+      thumbsHtml += `<div class="thumb" onclick="goToSlide(${i})"><img src="${cat.images[i]}" alt=""></div>`;
+    } else {
+      // placeholder enquanto não há fotos reais cadastradas
+      slidesHtml += `<div class="carousel-slide"><div class="g-placeholder"><svg class="icon"><use href="#${cat.icon}"/></svg>${cat.title} photo ${i+1}<br><small style="opacity:.6">(add real photo)</small></div></div>`;
+      thumbsHtml += `<div class="thumb" onclick="goToSlide(${i})"></div>`;
+    }
   }
+  track.innerHTML = slidesHtml;
+  thumbs.innerHTML = thumbsHtml;
+
+  updateCarousel();
 
   document.getElementById('modalOverlay').classList.add('active');
   document.body.style.overflow = 'hidden';
 }
+
+function updateCarousel(){
+  const track = document.getElementById('carouselTrack');
+  const slides = track.children;
+  if(!slides.length) return;
+  track.style.transform = `translateX(-${currentIndex * 100}%)`;
+  document.getElementById('carouselCounter').textContent = `${currentIndex + 1} / ${slides.length}`;
+  [...document.getElementById('thumbStrip').children].forEach((t, i) => {
+    t.classList.toggle('active', i === currentIndex);
+  });
+}
+function nextSlide(){
+  const total = document.getElementById('carouselTrack').children.length;
+  currentIndex = (currentIndex + 1) % total;
+  updateCarousel();
+}
+function prevSlide(){
+  const total = document.getElementById('carouselTrack').children.length;
+  currentIndex = (currentIndex - 1 + total) % total;
+  updateCarousel();
+}
+function goToSlide(i){
+  currentIndex = i;
+  updateCarousel();
+}
+
 function closeModal(){
   document.getElementById('modalOverlay').classList.remove('active');
   document.body.style.overflow = '';
@@ -764,7 +849,36 @@ function closeModal(){
 document.getElementById('modalOverlay').addEventListener('click', (e) => {
   if(e.target.id === 'modalOverlay') closeModal();
 });
-document.addEventListener('keydown', (e) => { if(e.key === 'Escape') closeModal(); });
+document.addEventListener('keydown', (e) => {
+  if(!document.getElementById('modalOverlay').classList.contains('active')) return;
+  if(e.key === 'Escape') closeModal();
+  if(e.key === 'ArrowRight') nextSlide();
+  if(e.key === 'ArrowLeft') prevSlide();
+});
+
+/* Swipe no celular */
+(function(){
+  const viewport = document.getElementById('carouselViewport');
+  let startX = 0, deltaX = 0, dragging = false;
+
+  viewport.addEventListener('touchstart', (e) => {
+    startX = e.touches[0].clientX;
+    dragging = true;
+  }, {passive:true});
+
+  viewport.addEventListener('touchmove', (e) => {
+    if(!dragging) return;
+    deltaX = e.touches[0].clientX - startX;
+  }, {passive:true});
+
+  viewport.addEventListener('touchend', () => {
+    if(!dragging) return;
+    dragging = false;
+    if(deltaX > 50) prevSlide();
+    else if(deltaX < -50) nextSlide();
+    deltaX = 0;
+  });
+})();
 
 /* =========================================================
    MARQUEE DE MARCAS
