@@ -139,15 +139,14 @@
     font-style:italic;font-size:14.5px;letter-spacing:.4px;padding-bottom:10px;opacity:.85;
   }
   .marquee-track-wrap{overflow:hidden;position:relative;}
-  .marquee-track{display:flex;width:max-content;animation:scrollLeft 28s linear infinite;}
+  .marquee-track{display:flex;align-items:center;width:max-content;animation:scrollLeft 26s linear infinite;}
   .marquee-track:hover{animation-play-state:paused;}
   .marquee-item{
-    display:flex;align-items:center;gap:10px;padding:0 42px;
-    font-family:'Barlow Condensed',sans-serif;font-weight:700;font-size:19px;
-    letter-spacing:1.5px;color:var(--cream);white-space:nowrap;text-transform:uppercase;
-    border-right:1px solid rgba(255,255,255,.14);
+    display:flex;align-items:center;justify-content:center;
+    padding:0 46px;border-right:1px solid rgba(255,255,255,.14);
   }
-  .marquee-item .dot{width:6px;height:6px;background:var(--red);border-radius:50%;}
+  .marquee-item img{height:34px;width:auto;max-width:150px;object-fit:contain;filter:brightness(0) invert(1);opacity:.9;transition:opacity .2s;}
+  .marquee-item:hover img{opacity:1;}
   @keyframes scrollLeft{from{transform:translateX(0);}to{transform:translateX(-50%);}}
 
   /* ---------- SECTION HEADERS ---------- */
@@ -621,7 +620,7 @@
     <div class="about-text">
       <div class="sec-eyebrow">WHO WE ARE</div>
       <h2>Local craftsmen, <span>national quality.</span></h2>
-      <p>Amanda Construction is a family-owned masonry and hardscape company based in Leominster, MA. We specialize in stone walls, walkways, patios, driveways and block retaining walls for homes and businesses across Central Massachusetts.</p>
+      <p>Amanda Construction is a family-owned masonry and hardscape company based in Leominster, MA. We specialize in stone walls, walkways, patios, driveways and block retaining walls for homes across Central Massachusetts.</p>
       <p>Every project — big or small — gets the same commitment: honest pricing, clean work, and stone that's built to outlast the seasons.</p>
     </div>
   </div>
@@ -727,6 +726,7 @@
       <h4>CONTACT</h4>
       <ul>
         <li><a href="tel:+19786224900">(978) 622-4900</a></li>
+        <li><a href="tel:+17746156281">(774) 615-6281</a></li>
         <li><a href="mailto:office@amandaconstruction.com">office@amandaconstruction.com</a></li>
       </ul>
     </div>
@@ -919,13 +919,19 @@ document.addEventListener('keydown', (e) => {
 
 /* =========================================================
    MARQUEE DE MARCAS
-   Placeholder com marcas comuns do setor de hardscape.
-   Confirmar com a Amanda quais parceiros reais usar.
+   Logos reais das marcas parceiras da Amanda Construction.
+   Para adicionar/trocar marca: só editar esse array.
 ========================================================= */
-const brands = ["TECHNISEAL","BELGARD","IDEAL PAVERS","IQ POWER TOOLS","KEYSTONE HARDSCAPES","ALLAN BLOCK"];
+const brands = [
+  { name:"Cambridge Pavers", logo:"logos/cambridge.png" },
+  { name:"Techo-Bloc", logo:"logos/techo-bloc.png" },
+  { name:"Techniseal", logo:"logos/techniseal.png" },
+  { name:"Unilock", logo:"logos/unilock.png" },
+  { name:"Ideal Concrete Block", logo:"logos/ideal.png" },
+];
 const track = document.getElementById('marqueeTrack');
 const loopBrands = [...brands, ...brands]; // duplica para loop infinito
-track.innerHTML = loopBrands.map(b => `<div class="marquee-item"><span class="dot"></span>${b}</div>`).join('');
+track.innerHTML = loopBrands.map(b => `<div class="marquee-item"><img src="${b.logo}" alt="${b.name}"></div>`).join('');
 
 /* =========================================================
    SLIDESHOW DA SEÇÃO ABOUT
