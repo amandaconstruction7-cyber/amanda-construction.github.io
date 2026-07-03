@@ -95,7 +95,7 @@
   .hero{
     position:relative;
     background:
-      linear-gradient(115deg, var(--navy-vivid) 0%, var(--navy-vivid) 42%, var(--red-darker) 42%, var(--red) 100%);
+      linear-gradient(115deg, var(--navy) 0%, var(--navy) 42%, var(--red-darker) 42%, var(--red) 100%);
     color:var(--white);
     padding:110px 0 130px;
     overflow:hidden;
@@ -260,6 +260,8 @@
 
   /* ---------- MAP / LOCATION ---------- */
   .map-frame-full{position:relative;width:100%;height:420px;border-radius:var(--radius);overflow:hidden;box-shadow:var(--shadow);}
+  .map-addr-line{display:flex;align-items:center;justify-content:center;gap:8px;margin:0 0 40px;font-family:'Barlow Condensed',sans-serif;font-weight:700;font-size:16px;letter-spacing:.5px;color:var(--navy);}
+  .map-addr-line .icon{width:18px;height:18px;color:var(--red);flex-shrink:0;}
   .map-frame-full iframe{position:absolute;inset:0;width:100%;height:100%;border:0;filter:grayscale(.15) contrast(1.02);}
   @media(max-width:820px){
     .map-frame-full{height:320px;}
@@ -706,6 +708,10 @@
       <div class="sec-eyebrow">WHERE WE WORK</div>
       <h2>Find us <span>on the map.</span></h2>
       <p>Based in Leominster, MA — proudly serving job sites throughout Central Massachusetts.</p>
+      <div class="map-addr-line">
+        <svg class="icon"><use href="#i-pin"/></svg>
+        <span>Leominster, MA 01453, USA</span>
+      </div>
     </div>
     <div class="map-frame-full">
       <iframe src="https://www.openstreetmap.org/export/embed.html?bbox=-71.80%2C42.505%2C-71.72%2C42.545&amp;layer=mapnik&amp;marker=42.5251%2C-71.7598" loading="lazy" referrerpolicy="no-referrer-when-downgrade" title="Amanda Construction service area map — Leominster, MA"></iframe>
