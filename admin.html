@@ -5,74 +5,198 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Review Approval | Amanda Construction Inc.</title>
 <meta name="robots" content="noindex">
-<link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@600;700&family=Barlow:wght@400;500;600&display=swap" rel="stylesheet">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Anton&family=Barlow+Condensed:wght@400;500;600;700&family=Barlow:wght@400;500;600&display=swap" rel="stylesheet">
 <style>
   :root{
-    --red:#8F0A0D; --navy:#152238; --navy-2:#1E3352;
-    --cream:#F6F1E7; --white:#FFFFFF; --gold:#2E8CFF;
-    --radius:8px;
+    --red:#8F0A0D; --red-dark:#6E0709;
+    --navy:#152238; --navy-2:#1E3352;
+    --cream:#F6F1E7; --cream-2:#EFE7D6;
+    --charcoal:#211D1B; --gold:#2E8CFF; --white:#FFFFFF;
+    --radius:6px; --shadow:0 14px 34px rgba(20,14,10,.14);
   }
   *{box-sizing:border-box;margin:0;padding:0;}
-  body{font-family:'Barlow',sans-serif;background:var(--cream);color:#211D1B;min-height:100vh;}
-  .wrap{max-width:720px;margin:0 auto;padding:40px 20px;}
-  h1{font-family:'Barlow Condensed',sans-serif;font-weight:700;color:var(--navy);font-size:26px;margin-bottom:6px;text-transform:uppercase;letter-spacing:.5px;}
-  .sub{color:#6b655c;font-size:14.5px;margin-bottom:30px;}
+  html{overflow-x:hidden;}
+  body{font-family:'Barlow',sans-serif;background:var(--cream);color:var(--charcoal);line-height:1.5;min-height:100vh;}
+  h1,h2,h3{font-family:'Anton',sans-serif;font-weight:400;text-transform:uppercase;letter-spacing:.3px;}
 
-  #loginBox{background:var(--navy);border-radius:var(--radius);padding:34px;max-width:380px;margin:60px auto;}
-  #loginBox label{display:block;color:rgba(255,255,255,.85);font-size:13px;letter-spacing:.5px;text-transform:uppercase;font-family:'Barlow Condensed',sans-serif;font-weight:600;margin-bottom:6px;}
-  #loginBox input{width:100%;padding:11px 13px;border-radius:5px;border:1px solid rgba(255,255,255,.2);background:rgba(255,255,255,.07);color:var(--white);font-size:15px;margin-bottom:16px;}
-  #loginBox button{width:100%;padding:12px;border-radius:5px;border:none;background:var(--red);color:var(--white);font-family:'Barlow Condensed',sans-serif;font-weight:700;font-size:15px;letter-spacing:.5px;text-transform:uppercase;cursor:pointer;}
-  #loginError{color:#ff8080;font-size:13.5px;margin-top:10px;min-height:18px;}
-
-  #app{display:none;}
-  .topbar{display:flex;justify-content:space-between;align-items:center;margin-bottom:28px;}
-  #logoutBtn{background:none;border:1px solid var(--navy);color:var(--navy);padding:8px 16px;border-radius:5px;font-size:13.5px;cursor:pointer;font-family:'Barlow Condensed',sans-serif;font-weight:600;}
-
-  .review-item{background:var(--white);border-radius:var(--radius);padding:22px;margin-bottom:16px;border:1px solid rgba(0,0,0,.08);}
-  .review-item .stars{color:var(--gold);font-size:15px;margin-bottom:8px;}
-  .review-item .rname{font-weight:600;color:var(--navy);margin-bottom:2px;}
-  .review-item .rtext{color:#3a3530;font-size:15px;margin:8px 0 14px;line-height:1.5;}
-  .review-item .rdate{color:#9c9384;font-size:12.5px;margin-bottom:14px;}
-  .review-actions{display:flex;gap:10px;}
-  .review-actions button{padding:9px 18px;border-radius:5px;border:none;font-family:'Barlow Condensed',sans-serif;font-weight:700;font-size:13.5px;letter-spacing:.5px;text-transform:uppercase;cursor:pointer;}
-  .btn-approve{background:#1d7a3d;color:var(--white);}
-  .btn-reject{background:#a33;color:var(--white);}
-  .btn-unpublish{background:#7a5a1d;color:var(--white);}
-  #emptyMsg, #loadingMsg{color:#7a746a;font-style:italic;padding:20px 0;}
-  .tabs{display:flex;gap:8px;margin-bottom:22px;}
-  .tab-btn{
-    padding:9px 20px;border-radius:5px;border:1px solid rgba(0,0,0,.15);background:var(--white);
-    color:var(--navy);font-family:'Barlow Condensed',sans-serif;font-weight:600;font-size:14px;
-    letter-spacing:.3px;cursor:pointer;
+  /* ---------- TOP BAR ---------- */
+  .topbar{
+    background:var(--navy);position:relative;overflow:hidden;
+    border-bottom:3px solid var(--red);
   }
-  .tab-btn.active{background:var(--navy);color:var(--white);border-color:var(--navy);}
-  .badge-live{display:inline-block;background:#1d7a3d;color:var(--white);font-size:11px;padding:2px 8px;border-radius:10px;font-family:'Barlow Condensed',sans-serif;font-weight:700;letter-spacing:.5px;text-transform:uppercase;margin-left:8px;}
+  .topbar::before{
+    content:'';position:absolute;inset:0;
+    background-image:repeating-linear-gradient(90deg, rgba(255,255,255,.03) 0 2px, transparent 2px 40px),
+                      repeating-linear-gradient(0deg, rgba(255,255,255,.03) 0 2px, transparent 2px 40px);
+  }
+  .topbar-inner{
+    position:relative;z-index:2;max-width:920px;margin:0 auto;padding:22px 24px;
+    display:flex;align-items:center;justify-content:space-between;gap:16px;flex-wrap:wrap;
+  }
+  .topbar-brand{display:flex;align-items:center;gap:14px;}
+  .topbar-brand img{height:36px;width:auto;filter:brightness(1.2);}
+  .topbar-brand .tb-text{color:rgba(255,255,255,.55);font-family:'Barlow Condensed',sans-serif;font-weight:600;font-size:12.5px;letter-spacing:2px;text-transform:uppercase;border-left:2px solid var(--red);padding-left:14px;}
+  .whoami{color:rgba(255,255,255,.65);font-size:13.5px;}
+  .whoami strong{color:var(--white);font-weight:600;}
+  #logoutBtn{
+    background:transparent;border:1px solid rgba(255,255,255,.3);color:var(--white);
+    padding:9px 18px;border-radius:var(--radius);font-family:'Barlow Condensed',sans-serif;
+    font-weight:600;font-size:13px;letter-spacing:.5px;text-transform:uppercase;cursor:pointer;
+    transition:.15s;
+  }
+  #logoutBtn:hover{background:var(--red);border-color:var(--red);}
+
+  .wrap{max-width:920px;margin:0 auto;padding:44px 24px 80px;}
+  .page-head{margin-bottom:34px;}
+  .page-head .eyebrow{font-family:'Barlow Condensed',sans-serif;font-weight:700;letter-spacing:3px;font-size:12.5px;color:var(--red);text-transform:uppercase;margin-bottom:8px;}
+  .page-head h1{font-size:clamp(24px,3vw,34px);color:var(--navy);line-height:1.1;margin-bottom:8px;}
+  .page-head p{color:#6b655c;font-size:15px;}
+
+  /* ---------- LOGIN ---------- */
+  #loginScreen{
+    min-height:100vh;display:flex;align-items:center;justify-content:center;
+    background:var(--navy);position:relative;overflow:hidden;padding:24px;
+  }
+  #loginScreen::before{
+    content:'';position:absolute;inset:0;
+    background:linear-gradient(135deg, var(--navy) 0%, var(--navy) 55%, var(--red-dark) 55%, var(--red) 100%);
+    opacity:.9;
+  }
+  #loginScreen::after{
+    content:'';position:absolute;inset:0;
+    background-image:repeating-linear-gradient(90deg, rgba(255,255,255,.035) 0 2px, transparent 2px 44px),
+                      repeating-linear-gradient(0deg, rgba(255,255,255,.035) 0 2px, transparent 2px 44px);
+  }
+  #loginBox{
+    position:relative;z-index:2;background:rgba(21,34,56,.88);backdrop-filter:blur(6px);
+    border:1px solid rgba(255,255,255,.14);border-radius:10px;padding:40px 38px;
+    max-width:380px;width:100%;box-shadow:0 30px 70px rgba(0,0,0,.4);
+  }
+  #loginBox .login-logo{display:block;height:40px;width:auto;margin:0 auto 22px;filter:brightness(1.3);}
+  #loginBox h2{color:var(--white);font-size:19px;text-align:center;margin-bottom:6px;}
+  #loginBox .login-sub{color:rgba(255,255,255,.5);font-size:13px;text-align:center;margin-bottom:26px;}
+  #loginBox label{display:block;color:rgba(255,255,255,.8);font-size:12px;letter-spacing:1.5px;text-transform:uppercase;font-family:'Barlow Condensed',sans-serif;font-weight:600;margin-bottom:6px;}
+  #loginBox input{
+    width:100%;padding:12px 14px;border-radius:5px;border:1px solid rgba(255,255,255,.18);
+    background:rgba(255,255,255,.06);color:var(--white);font-size:15px;margin-bottom:16px;
+    font-family:'Barlow',sans-serif;
+  }
+  #loginBox input:focus{outline:none;border-color:var(--gold);}
+  #loginBox input::placeholder{color:rgba(255,255,255,.35);}
+  #loginBox button{
+    width:100%;padding:13px;border-radius:5px;border:none;background:var(--red);color:var(--white);
+    font-family:'Barlow Condensed',sans-serif;font-weight:700;font-size:14.5px;letter-spacing:1px;
+    text-transform:uppercase;cursor:pointer;transition:.15s;margin-top:4px;
+  }
+  #loginBox button:hover{background:var(--red-dark);}
+  #loginError{color:#ff9494;font-size:13px;margin-top:12px;min-height:16px;text-align:center;}
+
+  /* ---------- TABS ---------- */
+  .tabs{display:flex;gap:10px;margin-bottom:30px;border-bottom:1px solid #ddd4c2;}
+  .tab-btn{
+    padding:11px 4px;margin-bottom:-1px;border:none;background:none;
+    color:#8a8378;font-family:'Barlow Condensed',sans-serif;font-weight:700;font-size:15px;
+    letter-spacing:.5px;text-transform:uppercase;cursor:pointer;position:relative;
+    border-bottom:3px solid transparent;
+  }
+  .tab-btn + .tab-btn{margin-left:22px;}
+  .tab-btn.active{color:var(--navy);border-bottom-color:var(--red);}
+  .tab-count{
+    display:inline-block;background:var(--red);color:var(--white);font-size:11px;font-weight:700;
+    border-radius:10px;padding:1px 8px;margin-left:6px;font-family:'Barlow Condensed',sans-serif;
+  }
+
+  /* ---------- REVIEW CARDS ---------- */
+  .review-item{
+    background:var(--white);border-radius:var(--radius);padding:26px 28px;margin-bottom:16px;
+    border:1px solid rgba(0,0,0,.07);box-shadow:var(--shadow);position:relative;
+  }
+  .review-item .stars{color:var(--gold);font-size:15px;margin-bottom:10px;letter-spacing:2px;}
+  .review-item .rhead{display:flex;align-items:baseline;justify-content:space-between;flex-wrap:wrap;gap:8px;margin-bottom:4px;}
+  .review-item .rname{font-family:'Barlow Condensed',sans-serif;font-weight:700;color:var(--navy);font-size:16.5px;letter-spacing:.3px;}
+  .review-item .rdate{color:#a89f8f;font-size:12.5px;}
+  .review-item .rtext{color:#3a3530;font-size:15.5px;margin:10px 0 18px;line-height:1.55;font-style:italic;}
+  .review-actions{display:flex;gap:10px;}
+  .review-actions button{
+    padding:10px 20px;border-radius:5px;border:none;font-family:'Barlow Condensed',sans-serif;
+    font-weight:700;font-size:13px;letter-spacing:.5px;text-transform:uppercase;cursor:pointer;
+    transition:.15s;
+  }
+  .btn-approve{background:#1d7a3d;color:var(--white);}
+  .btn-approve:hover{background:#166030;}
+  .btn-reject{background:transparent;color:#a33;border:1px solid #a33 !important;}
+  .btn-reject:hover{background:#a33;color:var(--white);}
+  .btn-unpublish{background:transparent;color:var(--red);border:1px solid var(--red) !important;}
+  .btn-unpublish:hover{background:var(--red);color:var(--white);}
+  .badge-live{
+    display:inline-block;background:#1d7a3d;color:var(--white);font-size:10.5px;padding:3px 10px;
+    border-radius:20px;font-family:'Barlow Condensed',sans-serif;font-weight:700;letter-spacing:.8px;
+    text-transform:uppercase;
+  }
+
+  #emptyMsg, #loadingMsg{color:#9c9384;font-style:italic;padding:40px 0;text-align:center;font-size:15px;}
+  #errorMsg{
+    display:none;background:#fdeaea;border:1px solid #e8b4b4;color:#8a2020;border-radius:var(--radius);
+    padding:18px 22px;margin-bottom:24px;font-size:14px;line-height:1.6;
+  }
+  #errorMsg a{color:#8a2020;font-weight:700;}
+  #errorMsg strong{display:block;margin-bottom:6px;font-family:'Barlow Condensed',sans-serif;text-transform:uppercase;letter-spacing:.5px;font-size:13px;}
+
+  @media(max-width:600px){
+    .wrap{padding:32px 18px 60px;}
+    .topbar-brand .tb-text{display:none;}
+    .review-actions{flex-wrap:wrap;}
+  }
 </style>
 </head>
 <body>
 
-<div class="wrap">
-  <h1>Review Approval Panel</h1>
-  <p class="sub">Amanda Construction Inc. — approve or reject reviews submitted through the website.</p>
-
+<!-- ============ LOGIN ============ -->
+<div id="loginScreen">
   <div id="loginBox">
+    <img src="img/logo-official.webp" alt="Amanda Construction" class="login-logo">
+    <h2>Review Approval Panel</h2>
+    <div class="login-sub">Staff access only</div>
     <label>Email</label>
-    <input type="email" id="loginEmail" autocomplete="username">
+    <input type="email" id="loginEmail" autocomplete="username" placeholder="you@amandaconstruction.com">
     <label>Password</label>
-    <input type="password" id="loginPassword" autocomplete="current-password">
+    <input type="password" id="loginPassword" autocomplete="current-password" placeholder="••••••••">
     <button id="loginBtn">Log In</button>
     <div id="loginError"></div>
   </div>
+</div>
 
-  <div id="app">
-    <div class="topbar">
-      <div id="whoami" style="color:#6b655c;font-size:14px;"></div>
-      <button id="logoutBtn">Log Out</button>
+<!-- ============ APP ============ -->
+<div id="app" style="display:none;">
+  <div class="topbar">
+    <div class="topbar-inner">
+      <div class="topbar-brand">
+        <img src="img/logo-official.webp" alt="Amanda Construction">
+        <div class="tb-text">Review Panel</div>
+      </div>
+      <div style="display:flex;align-items:center;gap:16px;">
+        <div class="whoami">Logged in as <strong id="whoamiEmail"></strong></div>
+        <button id="logoutBtn">Log Out</button>
+      </div>
     </div>
+  </div>
+
+  <div class="wrap">
+    <div class="page-head">
+      <div class="eyebrow">Client Reviews</div>
+      <h1>Approve what goes live</h1>
+      <p>New reviews submitted on the website land here first. Approve to publish, or reject to discard.</p>
+    </div>
+
+    <div id="errorMsg"></div>
+
     <div class="tabs">
-      <button class="tab-btn active" data-tab="pending">Pending</button>
+      <button class="tab-btn active" data-tab="pending">Pending <span class="tab-count" id="pendingCount" style="display:none;">0</span></button>
       <button class="tab-btn" data-tab="approved">Published</button>
     </div>
+
     <div id="loadingMsg">Loading reviews…</div>
     <div id="emptyMsg" style="display:none;"></div>
     <div id="reviewList"></div>
@@ -83,10 +207,6 @@
 <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-auth-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore-compat.js"></script>
 <script>
-/* =========================================================
-   ATENÇÃO EULER: cole aqui a MESMA firebaseConfig que está
-   no index.html (precisa ser idêntica, é o mesmo projeto).
-========================================================= */
 const firebaseConfig = {
   apiKey: "AIzaSyDgfejug_S2l29lVGK2C08wFLFdkAzteos",
   authDomain: "amanda-construction-reviews.firebaseapp.com",
@@ -100,11 +220,15 @@ firebase.initializeApp(firebaseConfig);
 const auth = firebase.auth();
 const db = firebase.firestore();
 
-const loginBox = document.getElementById('loginBox');
+const loginScreen = document.getElementById('loginScreen');
 const app = document.getElementById('app');
 const loginError = document.getElementById('loginError');
+const errorMsg = document.getElementById('errorMsg');
 
-document.getElementById('loginBtn').addEventListener('click', async () => {
+document.getElementById('loginBtn').addEventListener('click', doLogin);
+document.getElementById('loginPassword').addEventListener('keydown', (e) => { if (e.key === 'Enter') doLogin(); });
+
+async function doLogin(){
   loginError.textContent = '';
   const email = document.getElementById('loginEmail').value.trim();
   const password = document.getElementById('loginPassword').value;
@@ -113,18 +237,18 @@ document.getElementById('loginBtn').addEventListener('click', async () => {
   } catch (e) {
     loginError.textContent = 'Wrong email or password.';
   }
-});
+}
 
 document.getElementById('logoutBtn').addEventListener('click', () => auth.signOut());
 
 auth.onAuthStateChanged((user) => {
   if (user) {
-    loginBox.style.display = 'none';
+    loginScreen.style.display = 'none';
     app.style.display = 'block';
-    document.getElementById('whoami').textContent = 'Logged in as ' + user.email;
+    document.getElementById('whoamiEmail').textContent = user.email;
     loadReviews();
   } else {
-    loginBox.style.display = 'block';
+    loginScreen.style.display = 'flex';
     app.style.display = 'none';
   }
 });
@@ -146,6 +270,7 @@ function loadReviews(){
   const loadingEl = document.getElementById('loadingMsg');
   const emptyEl = document.getElementById('emptyMsg');
 
+  errorMsg.style.display = 'none';
   loadingEl.style.display = 'block';
   loadingEl.textContent = 'Loading reviews…';
   emptyEl.style.display = 'none';
@@ -157,6 +282,11 @@ function loadReviews(){
     .onSnapshot((snap) => {
       loadingEl.style.display = 'none';
       listEl.innerHTML = '';
+      const pendingCountEl = document.getElementById('pendingCount');
+      if (currentTab === 'pending') {
+        if (snap.size > 0) { pendingCountEl.style.display = 'inline-block'; pendingCountEl.textContent = snap.size; }
+        else { pendingCountEl.style.display = 'none'; }
+      }
       if (snap.empty) {
         emptyEl.textContent = currentTab === 'pending'
           ? 'No pending reviews right now. New ones will show up here automatically.'
@@ -168,7 +298,8 @@ function loadReviews(){
       snap.forEach((doc, i) => {
         const r = doc.data();
         const date = r.createdAt ? r.createdAt.toDate().toLocaleDateString() : '';
-        const stars = '★'.repeat(Math.max(1, Math.min(5, r.rating || 5)));
+        const n = Math.max(1, Math.min(5, r.rating || 5));
+        const stars = '★'.repeat(n) + '☆'.repeat(5 - n);
         const isFeatured = currentTab === 'approved' && i === 0;
         const item = document.createElement('div');
         item.className = 'review-item';
@@ -177,18 +308,44 @@ function loadReviews(){
              <button class="btn-reject" data-id="${doc.id}" data-action="reject">Reject</button>`
           : `<button class="btn-unpublish" data-id="${doc.id}" data-action="unpublish">Remove from site</button>`;
         item.innerHTML = `
-          <div class="stars">${stars}${isFeatured ? '<span class="badge-live">Showing on site now</span>' : ''}</div>
-          <div class="rname">${escapeHtml(r.name || 'Anonymous')}</div>
-          <div class="rdate">${date}</div>
+          <div class="rhead">
+            <div class="rname">${escapeHtml(r.name || 'Anonymous')} ${isFeatured ? '<span class="badge-live">Showing on site now</span>' : ''}</div>
+            <div class="rdate">${date}</div>
+          </div>
+          <div class="stars">${stars}</div>
           <div class="rtext">"${escapeHtml(r.text || '')}"</div>
           <div class="review-actions">${actions}</div>
         `;
         listEl.appendChild(item);
       });
     }, (err) => {
-      loadingEl.textContent = 'Could not load reviews. Check your connection.';
+      loadingEl.style.display = 'none';
       console.error(err);
+      showFirestoreError(err);
     });
+}
+
+function showFirestoreError(err){
+  errorMsg.style.display = 'block';
+  if (err.code === 'failed-precondition' || (err.message && err.message.includes('index'))) {
+    errorMsg.innerHTML = `
+      <strong>Missing database index</strong>
+      This query needs a Firestore index that hasn't been created yet. Open the browser
+      console (right-click the page &rarr; Inspect &rarr; Console tab) — Firebase prints a
+      direct link there that creates the index automatically with one click. After clicking
+      it and waiting ~1 minute, reload this page.
+      <br><br><em>Technical detail: ${escapeHtml(err.message || err.code)}</em>
+    `;
+  } else if (err.code === 'permission-denied') {
+    errorMsg.innerHTML = `
+      <strong>Permission denied</strong>
+      Your Firestore security rules don't allow this account to read/update reviews yet.
+      Double check the rules match what was set up, and that you're logged in with the
+      correct account.
+    `;
+  } else {
+    errorMsg.innerHTML = `<strong>Could not load reviews</strong> ${escapeHtml(err.message || String(err))}`;
+  }
 }
 
 function escapeHtml(str){
@@ -201,14 +358,19 @@ document.getElementById('reviewList').addEventListener('click', async (e) => {
   const id = e.target.dataset.id;
   const action = e.target.dataset.action;
   if (!id) return;
-  if (action === 'approve') {
-    await db.collection('reviews').doc(id).update({ status: 'approved' });
-  } else if (action === 'reject') {
-    await db.collection('reviews').doc(id).delete();
-  } else if (action === 'unpublish') {
-    if (confirm('Remove this review from the site? This cannot be undone.')) {
+  try {
+    if (action === 'approve') {
+      await db.collection('reviews').doc(id).update({ status: 'approved' });
+    } else if (action === 'reject') {
       await db.collection('reviews').doc(id).delete();
+    } else if (action === 'unpublish') {
+      if (confirm('Remove this review from the site? This cannot be undone.')) {
+        await db.collection('reviews').doc(id).delete();
+      }
     }
+  } catch(err) {
+    console.error(err);
+    showFirestoreError(err);
   }
 });
 </script>
