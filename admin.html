@@ -1,0 +1,174 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Review Approval | Amanda Construction Inc.</title>
+<meta name="robots" content="noindex">
+<link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@600;700&family=Barlow:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --red:#8F0A0D; --navy:#152238; --navy-2:#1E3352;
+    --cream:#F6F1E7; --white:#FFFFFF; --gold:#2E8CFF;
+    --radius:8px;
+  }
+  *{box-sizing:border-box;margin:0;padding:0;}
+  body{font-family:'Barlow',sans-serif;background:var(--cream);color:#211D1B;min-height:100vh;}
+  .wrap{max-width:720px;margin:0 auto;padding:40px 20px;}
+  h1{font-family:'Barlow Condensed',sans-serif;font-weight:700;color:var(--navy);font-size:26px;margin-bottom:6px;text-transform:uppercase;letter-spacing:.5px;}
+  .sub{color:#6b655c;font-size:14.5px;margin-bottom:30px;}
+
+  #loginBox{background:var(--navy);border-radius:var(--radius);padding:34px;max-width:380px;margin:60px auto;}
+  #loginBox label{display:block;color:rgba(255,255,255,.85);font-size:13px;letter-spacing:.5px;text-transform:uppercase;font-family:'Barlow Condensed',sans-serif;font-weight:600;margin-bottom:6px;}
+  #loginBox input{width:100%;padding:11px 13px;border-radius:5px;border:1px solid rgba(255,255,255,.2);background:rgba(255,255,255,.07);color:var(--white);font-size:15px;margin-bottom:16px;}
+  #loginBox button{width:100%;padding:12px;border-radius:5px;border:none;background:var(--red);color:var(--white);font-family:'Barlow Condensed',sans-serif;font-weight:700;font-size:15px;letter-spacing:.5px;text-transform:uppercase;cursor:pointer;}
+  #loginError{color:#ff8080;font-size:13.5px;margin-top:10px;min-height:18px;}
+
+  #app{display:none;}
+  .topbar{display:flex;justify-content:space-between;align-items:center;margin-bottom:28px;}
+  #logoutBtn{background:none;border:1px solid var(--navy);color:var(--navy);padding:8px 16px;border-radius:5px;font-size:13.5px;cursor:pointer;font-family:'Barlow Condensed',sans-serif;font-weight:600;}
+
+  .review-item{background:var(--white);border-radius:var(--radius);padding:22px;margin-bottom:16px;border:1px solid rgba(0,0,0,.08);}
+  .review-item .stars{color:var(--gold);font-size:15px;margin-bottom:8px;}
+  .review-item .rname{font-weight:600;color:var(--navy);margin-bottom:2px;}
+  .review-item .rtext{color:#3a3530;font-size:15px;margin:8px 0 14px;line-height:1.5;}
+  .review-item .rdate{color:#9c9384;font-size:12.5px;margin-bottom:14px;}
+  .review-actions{display:flex;gap:10px;}
+  .review-actions button{padding:9px 18px;border-radius:5px;border:none;font-family:'Barlow Condensed',sans-serif;font-weight:700;font-size:13.5px;letter-spacing:.5px;text-transform:uppercase;cursor:pointer;}
+  .btn-approve{background:#1d7a3d;color:var(--white);}
+  .btn-reject{background:#a33;color:var(--white);}
+  #emptyMsg, #loadingMsg{color:#7a746a;font-style:italic;padding:20px 0;}
+</style>
+</head>
+<body>
+
+<div class="wrap">
+  <h1>Review Approval Panel</h1>
+  <p class="sub">Amanda Construction Inc. — approve or reject reviews submitted through the website.</p>
+
+  <div id="loginBox">
+    <label>Email</label>
+    <input type="email" id="loginEmail" autocomplete="username">
+    <label>Password</label>
+    <input type="password" id="loginPassword" autocomplete="current-password">
+    <button id="loginBtn">Log In</button>
+    <div id="loginError"></div>
+  </div>
+
+  <div id="app">
+    <div class="topbar">
+      <div id="whoami" style="color:#6b655c;font-size:14px;"></div>
+      <button id="logoutBtn">Log Out</button>
+    </div>
+    <div id="loadingMsg">Loading pending reviews…</div>
+    <div id="emptyMsg" style="display:none;">No pending reviews right now. New ones will show up here automatically.</div>
+    <div id="reviewList"></div>
+  </div>
+</div>
+
+<script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-auth-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore-compat.js"></script>
+<script>
+/* =========================================================
+   ATENÇÃO EULER: cole aqui a MESMA firebaseConfig que está
+   no index.html (precisa ser idêntica, é o mesmo projeto).
+========================================================= */
+const firebaseConfig = {
+  apiKey: "COLE_AQUI",
+  authDomain: "SEU-PROJETO.firebaseapp.com",
+  projectId: "SEU-PROJETO",
+  storageBucket: "SEU-PROJETO.appspot.com",
+  messagingSenderId: "COLE_AQUI",
+  appId: "COLE_AQUI"
+};
+
+firebase.initializeApp(firebaseConfig);
+const auth = firebase.auth();
+const db = firebase.firestore();
+
+const loginBox = document.getElementById('loginBox');
+const app = document.getElementById('app');
+const loginError = document.getElementById('loginError');
+
+document.getElementById('loginBtn').addEventListener('click', async () => {
+  loginError.textContent = '';
+  const email = document.getElementById('loginEmail').value.trim();
+  const password = document.getElementById('loginPassword').value;
+  try {
+    await auth.signInWithEmailAndPassword(email, password);
+  } catch (e) {
+    loginError.textContent = 'Wrong email or password.';
+  }
+});
+
+document.getElementById('logoutBtn').addEventListener('click', () => auth.signOut());
+
+auth.onAuthStateChanged((user) => {
+  if (user) {
+    loginBox.style.display = 'none';
+    app.style.display = 'block';
+    document.getElementById('whoami').textContent = 'Logged in as ' + user.email;
+    loadPendingReviews();
+  } else {
+    loginBox.style.display = 'block';
+    app.style.display = 'none';
+  }
+});
+
+function loadPendingReviews(){
+  const listEl = document.getElementById('reviewList');
+  const loadingEl = document.getElementById('loadingMsg');
+  const emptyEl = document.getElementById('emptyMsg');
+
+  db.collection('reviews').where('status','==','pending').orderBy('createdAt','desc')
+    .onSnapshot((snap) => {
+      loadingEl.style.display = 'none';
+      listEl.innerHTML = '';
+      if (snap.empty) {
+        emptyEl.style.display = 'block';
+        return;
+      }
+      emptyEl.style.display = 'none';
+      snap.forEach((doc) => {
+        const r = doc.data();
+        const date = r.createdAt ? r.createdAt.toDate().toLocaleDateString() : '';
+        const stars = '★'.repeat(Math.max(1, Math.min(5, r.rating || 5)));
+        const item = document.createElement('div');
+        item.className = 'review-item';
+        item.innerHTML = `
+          <div class="stars">${stars}</div>
+          <div class="rname">${escapeHtml(r.name || 'Anonymous')}</div>
+          <div class="rdate">${date}</div>
+          <div class="rtext">"${escapeHtml(r.text || '')}"</div>
+          <div class="review-actions">
+            <button class="btn-approve" data-id="${doc.id}">Approve</button>
+            <button class="btn-reject" data-id="${doc.id}">Reject</button>
+          </div>
+        `;
+        listEl.appendChild(item);
+      });
+    }, (err) => {
+      loadingEl.textContent = 'Could not load reviews. Check your connection.';
+      console.error(err);
+    });
+}
+
+function escapeHtml(str){
+  const d = document.createElement('div');
+  d.textContent = str;
+  return d.innerHTML;
+}
+
+document.getElementById('reviewList').addEventListener('click', async (e) => {
+  const id = e.target.dataset.id;
+  if (!id) return;
+  if (e.target.classList.contains('btn-approve')) {
+    await db.collection('reviews').doc(id).update({ status: 'approved' });
+  } else if (e.target.classList.contains('btn-reject')) {
+    await db.collection('reviews').doc(id).delete();
+  }
+});
+</script>
+</body>
+</html>
