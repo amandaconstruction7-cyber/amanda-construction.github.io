@@ -1204,7 +1204,7 @@ async function loadLatestReview(){
       const n = Math.max(1, Math.min(5, r.rating || 5));
       const starsHtml = '<svg class="icon"><use href="#i-star"/></svg>'.repeat(n);
       const textVal = `"${r.text}"`;
-      const whoVal = `${r.name} — via amandaconstruction.com`;
+      const whoVal = `${r.name} — via ${r.source || 'amandaconstruction.com'}`;
 
       document.getElementById('reviewText').textContent = textVal;
       document.getElementById('reviewWho').textContent = whoVal;
@@ -1265,7 +1265,7 @@ async function openReviewsModal(){
         <div class="review-slide">
           <div class="stars">${stars}</div>
           <div class="rtext">"${escapeHtmlReview(r.text || '')}"</div>
-          <div class="rname">${escapeHtmlReview(r.name || 'Anonymous')}</div>
+          <div class="rname">${escapeHtmlReview(r.name || 'Anonymous')} — via ${escapeHtmlReview(r.source || 'amandaconstruction.com')}</div>
           <div class="rdate">${date}</div>
         </div>`;
     }).join('');
@@ -1333,7 +1333,7 @@ document.getElementById('reviewForm').addEventListener('submit', async function(
   }
   try {
     await reviewsDb.collection('reviews').add({
-      name, text, rating: selectedRating,
+      name, text, rating: selectedRating, source: 'amandaconstruction.com',
       status: 'pending',
       createdAt: firebase.firestore.FieldValue.serverTimestamp()
     });
