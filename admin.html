@@ -55,6 +55,44 @@
   .page-head h1{font-size:clamp(24px,3vw,34px);color:var(--navy);line-height:1.1;margin-bottom:8px;}
   .page-head p{color:#6b655c;font-size:15px;}
 
+  .quick-add-box{background:var(--white);border:1px solid rgba(0,0,0,.08);border-radius:var(--radius);margin-bottom:26px;box-shadow:var(--shadow);overflow:hidden;}
+  .quick-add-toggle{
+    display:block;width:100%;text-align:left;padding:16px 22px;background:var(--cream-2);border:none;
+    color:var(--navy);font-family:'Barlow Condensed',sans-serif;font-weight:700;font-size:14.5px;
+    letter-spacing:.3px;cursor:pointer;
+  }
+  .quick-add-toggle:hover{background:#e6dcc6;}
+  #quickAddForm{padding:22px;}
+  .quick-add-hint{color:#8a8378;font-size:13.5px;margin-bottom:18px;font-style:italic;}
+  .preset-list{display:flex;flex-direction:column;gap:10px;margin-bottom:22px;padding-bottom:22px;border-bottom:1px solid #e8e0d0;}
+  .preset-card{
+    text-align:left;background:var(--cream);border:1px solid #e0d7c4;border-radius:5px;
+    padding:14px 16px;cursor:pointer;transition:.15s;
+  }
+  .preset-card:hover{border-color:var(--gold);background:#fff;}
+  .preset-card.used{opacity:.4;pointer-events:none;}
+  .preset-card .pc-top{display:flex;justify-content:space-between;align-items:center;margin-bottom:4px;}
+  .preset-card .pc-name{font-family:'Barlow Condensed',sans-serif;font-weight:700;color:var(--navy);font-size:14px;}
+  .preset-card .pc-stars{color:var(--gold);font-size:12.5px;}
+  .preset-card .pc-text{color:#6b655c;font-size:13px;line-height:1.4;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;}
+  #quickAddForm label{display:block;color:var(--navy);font-size:12px;letter-spacing:1px;text-transform:uppercase;font-family:'Barlow Condensed',sans-serif;font-weight:600;margin-bottom:6px;margin-top:14px;}
+  #quickAddForm label:first-of-type{margin-top:0;}
+  #quickAddForm input, #quickAddForm textarea{
+    width:100%;padding:10px 13px;border-radius:5px;border:1px solid #d8d0bf;
+    background:var(--cream);color:var(--charcoal);font-size:14.5px;font-family:'Barlow',sans-serif;
+  }
+  #quickAddForm textarea{resize:vertical;}
+  #qaStarPicker{display:flex;gap:4px;font-size:24px;line-height:1;color:#d8d2c4;}
+  #qaStarPicker span{cursor:pointer;transition:color .15s;}
+  #qaStarPicker span.active{color:var(--gold);}
+  .qa-submit-btn{
+    margin-top:18px;padding:11px 24px;border-radius:5px;border:none;background:#1d7a3d;color:var(--white);
+    font-family:'Barlow Condensed',sans-serif;font-weight:700;font-size:14px;letter-spacing:.5px;
+    text-transform:uppercase;cursor:pointer;
+  }
+  .qa-submit-btn:hover{background:#166030;}
+  .qa-note{margin-top:10px;font-size:13.5px;color:#6b655c;min-height:18px;}
+
   /* ---------- LOGIN ---------- */
   #loginScreen{
     min-height:100vh;display:flex;align-items:center;justify-content:center;
@@ -117,6 +155,7 @@
   .review-item .stars{color:var(--gold);font-size:15px;margin-bottom:10px;letter-spacing:2px;}
   .review-item .rhead{display:flex;align-items:baseline;justify-content:space-between;flex-wrap:wrap;gap:8px;margin-bottom:4px;}
   .review-item .rname{font-family:'Barlow Condensed',sans-serif;font-weight:700;color:var(--navy);font-size:16.5px;letter-spacing:.3px;}
+  .review-item .rsource{font-family:'Barlow',sans-serif;font-weight:400;font-size:13px;color:#9c9384;text-transform:none;letter-spacing:0;}
   .review-item .rdate{color:#a89f8f;font-size:12.5px;}
   .review-item .rtext{color:#3a3530;font-size:15.5px;margin:10px 0 18px;line-height:1.55;font-style:italic;}
   .review-actions{display:flex;gap:10px;}
@@ -191,6 +230,28 @@
       <p>New reviews submitted on the website land here first. Approve to publish, or reject to discard.</p>
     </div>
 
+    <div class="quick-add-box">
+      <button type="button" id="quickAddToggle" class="quick-add-toggle">+ Add a review from Google/Facebook directly</button>
+      <div id="quickAddForm" style="display:none;">
+        <p class="quick-add-hint">Paste a review you found on Google or Facebook — it goes live immediately, no approval needed.</p>
+
+        <div id="presetList" class="preset-list"></div>
+
+        <label>Reviewer name</label>
+        <input type="text" id="qa_name" placeholder="e.g. Kathleen A.">
+        <label>Rating</label>
+        <div class="star-picker" id="qaStarPicker">
+          <span data-v="1">★</span><span data-v="2">★</span><span data-v="3">★</span><span data-v="4">★</span><span data-v="5">★</span>
+        </div>
+        <label>Review text</label>
+        <textarea id="qa_text" rows="4" placeholder="Paste the review text here..."></textarea>
+        <label>Source (optional)</label>
+        <input type="text" id="qa_source" placeholder="e.g. Google, Facebook, HomeAdvisor" value="Google">
+        <button type="button" id="qaSubmit" class="qa-submit-btn">Publish Now</button>
+        <div id="qaNote" class="qa-note"></div>
+      </div>
+    </div>
+
     <div id="errorMsg"></div>
 
     <div class="tabs">
@@ -254,6 +315,108 @@ auth.onAuthStateChanged((user) => {
   }
 });
 
+const presetReviews = [
+  {
+    name: 'Matt Divris',
+    source: 'Google',
+    rating: 5,
+    text: "I needed a 30ft walkway from my driveway to the deck, which ascends uphill about 9 feet. Amanda came recommended by the local masonry supply store. They came out, heard what I had to say and had some great suggestions. The estimate was good for the scope of work, and the Armortech pavers we picked. They were very responsive to all of my questions, and helped me basically design the walkway. The crew was super friendly, very careful with my property, and cared about every detail. I am so happy with the finished product, it is exactly what I wanted, and it is beautiful. Probably the best experience I've had with any contractor. Expectations were exceeded. I can't thank them enough for the beautiful work."
+  },
+  {
+    name: 'Pablo Kayky Dias',
+    source: 'Google',
+    rating: 5,
+    text: "The work that João Neto and his team at Amanda Construction did for me was absolutely outstanding. João Neto treated my project like family, with a brotherhood-level dedication, and they got it done so quickly. The stone wall is perfect, the service was top-notch, and the speed they worked with blew me away. I can't recommend João Neto enough, these guys are the real deal. Huge, huge thanks!"
+  },
+  {
+    name: 'Tom Sanford',
+    source: 'Google',
+    rating: 5,
+    text: "Wow! What a transformation! Quick, clean and beautiful. All we asked for. If you need any stone walkway work done I'd highly recommend Amanda Construction. They did wonderful work! Started Friday, took off the weekend, back Monday morning and finished on Tuesday afternoon. Very happy with the results."
+  }
+];
+
+function renderPresetList(){
+  const el = document.getElementById('presetList');
+  el.innerHTML = presetReviews.map((p, i) => `
+    <button type="button" class="preset-card" data-i="${i}">
+      <div class="pc-top">
+        <span class="pc-name">${p.name} <span style="color:#a89f8f;font-weight:400;">— via ${p.source}</span></span>
+        <span class="pc-stars">${'★'.repeat(p.rating)}</span>
+      </div>
+      <div class="pc-text">${p.text}</div>
+    </button>
+  `).join('');
+}
+renderPresetList();
+
+let selectedPresetIndex = null;
+document.getElementById('presetList').addEventListener('click', (e) => {
+  const card = e.target.closest('.preset-card');
+  if(!card) return;
+  const p = presetReviews[card.dataset.i];
+  document.getElementById('qa_name').value = p.name;
+  document.getElementById('qa_text').value = p.text;
+  document.getElementById('qa_source').value = p.source;
+  qaRating = p.rating;
+  renderQaStars();
+  selectedPresetIndex = card.dataset.i;
+});
+
+document.getElementById('quickAddToggle').addEventListener('click', () => {
+  const form = document.getElementById('quickAddForm');
+  form.style.display = form.style.display === 'none' ? 'block' : 'none';
+});
+
+let qaRating = 5;
+const qaStarPicker = document.getElementById('qaStarPicker');
+function renderQaStars(){
+  [...qaStarPicker.children].forEach((s,i) => s.classList.toggle('active', i < qaRating));
+}
+qaStarPicker.addEventListener('click', (e) => {
+  if(e.target.dataset.v){
+    qaRating = parseInt(e.target.dataset.v);
+    renderQaStars();
+  }
+});
+renderQaStars();
+
+document.getElementById('qaSubmit').addEventListener('click', async () => {
+  const note = document.getElementById('qaNote');
+  const name = document.getElementById('qa_name').value.trim();
+  const text = document.getElementById('qa_text').value.trim();
+  const source = document.getElementById('qa_source').value.trim() || 'Google';
+  if(!name || !text){
+    note.textContent = 'Fill in the name and review text first.';
+    note.style.color = '#a33';
+    return;
+  }
+  try {
+    await db.collection('reviews').add({
+      name,
+      text,
+      rating: qaRating,
+      source,
+      status: 'approved',
+      createdAt: firebase.firestore.FieldValue.serverTimestamp()
+    });
+    note.textContent = 'Published! It\'s live on the site now.';
+    note.style.color = '#1d7a3d';
+    document.getElementById('qa_name').value = '';
+    document.getElementById('qa_text').value = '';
+    qaRating = 5; renderQaStars();
+    if(selectedPresetIndex !== null){
+      const card = document.querySelector(`.preset-card[data-i="${selectedPresetIndex}"]`);
+      if(card) card.classList.add('used');
+      selectedPresetIndex = null;
+    }
+  } catch(err){
+    note.textContent = 'Something went wrong: ' + err.message;
+    note.style.color = '#a33';
+    console.error(err);
+  }
+});
+
 let currentTab = 'pending';
 let unsubscribe = null;
 
@@ -310,7 +473,7 @@ function loadReviews(){
           : `<button class="btn-unpublish" data-id="${doc.id}" data-action="unpublish">Remove from site</button>`;
         item.innerHTML = `
           <div class="rhead">
-            <div class="rname">${escapeHtml(r.name || 'Anonymous')} ${isFeatured ? '<span class="badge-live">Showing on site now</span>' : ''}</div>
+            <div class="rname">${escapeHtml(r.name || 'Anonymous')} <span class="rsource">via ${escapeHtml(r.source || 'amandaconstruction.com')}</span> ${isFeatured ? '<span class="badge-live">Showing on site now</span>' : ''}</div>
             <div class="rdate">${date}</div>
           </div>
           <div class="stars">${stars}</div>
