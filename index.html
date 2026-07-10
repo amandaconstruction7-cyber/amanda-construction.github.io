@@ -1279,13 +1279,11 @@ async function openReviewsModal(){
       const r = doc.data();
       const n = Math.max(1, Math.min(5, r.rating || 5));
       const stars = '<svg class="icon"><use href="#i-star"/></svg>'.repeat(n);
-      const date = r.createdAt ? r.createdAt.toDate().toLocaleDateString() : '';
       return `
         <div class="review-slide">
           <div class="stars">${stars}</div>
           <div class="rtext">"${escapeHtmlReview(r.text || '')}"</div>
           <div class="rname">${escapeHtmlReview(r.name || 'Anonymous')} — via ${escapeHtmlReview(r.source || 'amandaconstruction.com')}</div>
-          <div class="rdate">${date}</div>
         </div>`;
     }).join('');
     updateReviewCarousel();
